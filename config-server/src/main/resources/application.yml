@@ -1,0 +1,17 @@
+server:
+  port: 8888
+
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/egeyalcin/turkcell-config-management
+          clone-on-start: true
+          default-label: main
+  application:
+    name: config-server
+
+logging:
+  level:
+    root: INFO
