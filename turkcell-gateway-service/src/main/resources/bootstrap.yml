@@ -1,11 +1,11 @@
 spring:
   application:
-#    name: turkcell-gateway-service
-    name: turkcell-gateway-service-local
+    name: turkcell-gateway-service
+#    name: turkcell-gateway-service-local
   profiles:
     active: default
   cloud:
     config:
-#      uri: http://config-server-svc:8888
-      uri: http://localhost:8888
+      uri: http://config-server-svc:8888
+#      uri: http://localhost:8888
       fail-fast: true

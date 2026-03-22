@@ -1,11 +1,11 @@
 spring:
   application:
-    name: payment-service-local
-#    name: payment-service
+#    name: payment-service-local
+    name: payment-service
   profiles:
     active: default
   cloud:
     config:
-      uri: http://localhost:8888
-#      uri: http://config-server-svc:8888
+#      uri: http://localhost:8888
+      uri: http://config-server-svc:8888
       fail-fast: true
