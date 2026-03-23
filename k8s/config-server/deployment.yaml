@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: config-server
-          image: turkcell-config-server:latest
+          image: config-server:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8888
@@ -31,3 +31,10 @@ spec:
               path: /actuator/health
               port: 8888
             initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8888
+            initialDelaySeconds: 40
+            periodSeconds: 20
