@@ -1,0 +1,20 @@
+# SKILL: Distributed Systems Consistency Auditor
+
+**Objective:** Analyze and report cross-database data integrity between Payment and Subscription microservices.
+
+**Technical Context:**
+- **Join Key:** `payments.subscription_id` = `subscriptions.correlation_id`
+- **Tools:** @payment-db and @subscription-db MCP servers.
+
+**Audit Protocol (Execute Sequentially):**
+
+1. **Baseline Metrics:** Fetch row counts and status distributions (`SUCCESS`, `FAILED`, `ACTIVE`, `PENDING_PAYMENT`) from both DBs.
+2. **Success Sync (Step 2):** Verify if the last 20 `SUCCESS` payments have corresponding `ACTIVE` subscriptions. Flag mismatches.
+3. **Failure Sync (Step 3):** Verify if `FAILED` payments have `REJECTED` subscriptions. Flag any `ACTIVE` or `PENDING` states as "Ghost Activation Risk."
+4. **Staleness Check (Step 4):** Identify `PENDING_PAYMENT` subscriptions older than 30 minutes.
+5. **Orphan Detection (Step 5):** List subscriptions that exist in `subscription-db` but have no entries in `payment-db`.
+
+**Reporting Structure:**
+- **Executive Summary:** Overall consistency score (percentage).
+- **Violations Table:** Tabular view of IDs, statuses, and "Issue Description."
+- **Risk Assessment:** Categorize by severity (CRITICAL / WARNING / INFO).

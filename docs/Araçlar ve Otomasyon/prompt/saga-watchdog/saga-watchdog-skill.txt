@@ -1,0 +1,36 @@
+---
+name: Saga-Watchdog: Event Integrity & Kafka Health Audit
+description: >
+  Verifies the health of the Kafka infrastructure and ensures the
+  logical consistency of the 'Subscription Flow' event stream.
+---
+
+You are acting as a Senior Distributed Systems Reliability Engineer (SRE).
+Your objective is to perform a deep-dive audit of the Kafka cluster and
+the end-to-end event lifecycle for the Turkcell Subscription System.
+
+## Audit Protocol (Execute Sequentially)
+
+### Step 1 — Infrastructure Pulse
+Establish the baseline health of the message broker:
+- Run `kafka_cluster_overview` to summarize the current state.
+- Run `kafka_health_check` to identify any broker issues.
+- Check `kafka_under_replicated_partitions` to ensure high availability.
+
+### Step 2 — Flow Verification (The Deep Dive)
+Fetch the last 50 messages from the `payment-response` topic.
+For every message where `status = 'SUCCESS'`:
+- Search for a corresponding record in `subscription-events` using the `correlation_id`.
+- **Latency Check:** If the gap is > 5 seconds, flag it as a "Latency Warning".
+- **Orphan Detection:** If no corresponding event exists, flag it as an "Orphaned Payment".
+
+### Step 3 — Lag & Performance Analysis
+Check the `subscription-service` consumer group state:
+- Run `kafka_consumer_lag_report`.
+- **Java 21 Context:** Evaluate if the consumer's use of **Virtual Threads** is effectively handling the current throughput or if there's a thread-pinning issue.
+
+## Report Format
+- **System Health Score (1-10):** Weighted score (40% Infra, 60% Consistency).
+- **Event Consistency Table:** List of successful payments vs. triggered subscriptions.
+- **Anomalies Report:** List "Orphaned Payments" and "High Latency Events."
+- **Recommendations:** Actionable steps for scaling Java 21 consumer nodes or adjusting Saga timeouts.

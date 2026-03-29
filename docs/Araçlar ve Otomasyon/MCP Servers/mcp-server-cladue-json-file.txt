@@ -1,0 +1,55 @@
+{
+  "preferences": {
+    "coworkWebSearchEnabled": true,
+    "coworkScheduledTasksEnabled": false,
+    "ccdScheduledTasksEnabled": false,
+    "sidebarMode": "chat"
+  },
+  "mcpServers": {
+    "subscription-db": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@executeautomation/database-server",
+        "--postgresql",
+        "--host",
+        "localhost",
+        "--port",
+        "5432",
+        "--database",
+        "subscription_db",
+        "--user",
+        "admin",
+        "--password",
+        "sub123"
+      ]
+    },
+    "payment-db": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@executeautomation/database-server",
+        "--postgresql",
+        "--host",
+        "localhost",
+        "--port",
+        "5433",
+        "--database",
+        "payment_db",
+        "--user",
+        "admin",
+        "--password",
+        "pay123"
+      ]
+    },
+    "kafka": {
+      "command": "kafka-mcp-server",
+      "args": [],
+      "env": {
+        "KAFKA_BROKERS": "localhost:9092",
+        "KAFKA_CLIENT_ID": "kafka-mcp-server",
+        "MCP_TRANSPORT": "stdio"
+      }
+    }
+  }
+}
