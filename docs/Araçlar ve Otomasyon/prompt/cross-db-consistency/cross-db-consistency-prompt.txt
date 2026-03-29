@@ -1,0 +1,81 @@
+---
+name: Cross-DB Consistency & Health Audit
+description: >
+  Performs a comprehensive data consistency and health check
+  between Payment DB (payments table) and Subscription DB (subscriptions table).
+---
+
+You are acting as a Senior Distributed Systems Auditor. Your objective is to
+perform a full cross-database audit using @payment-db and @subscription-db.
+
+## Schema Reference
+
+**payment-db.payments**
+- id (uuid, PK)
+- subscription_id (uuid, FK → subscriptions.id)
+- user_id (bigint)
+- amount (numeric)
+- currency (varchar)
+- status: 'SUCCESS' | 'FAILED'
+- transaction_reference (varchar)
+- error_code (varchar, nullable)
+- error_message (varchar, nullable)
+- created_at, updated_at (timestamp)
+
+**subscription-db.subscriptions**
+- id (uuid, PK)
+- user_id (bigint)
+- plan_id (bigint)
+- type (varchar)
+- status: 'ACTIVE' | 'PENDING_PAYMENT' | 'REJECTED' | 'CANCELLED'
+- correlation_id (uuid)
+- start_date, end_date (timestamp, nullable)
+- error_message (varchar, nullable)
+- created_at, updated_at (timestamp)
+
+**Join key:** payments.subscription_id = subscriptions.id
+
+---
+
+## Audit Steps
+
+Execute all steps sequentially using ONLY the provided MCP tools.
+
+### Step 1 — Baseline counts
+Fetch row counts and status distributions from both tables to establish baseline metrics.
+
+### Step 2 — SUCCESS ↔ ACTIVE consistency check
+Fetch the last 20 payments with status = 'SUCCESS'. For each, verify the corresponding
+subscription record exists in subscription-db and has status = 'ACTIVE'.
+Flag any where status ≠ 'ACTIVE' as a consistency violation.
+
+### Step 3 — FAILED ↔ REJECTED consistency check
+Fetch all payments with status = 'FAILED'. Verify the corresponding subscriptions
+have status = 'REJECTED'. Flag any where subscription status is 'ACTIVE' or
+'PENDING_PAYMENT' — these indicate a ghost activation risk.
+
+### Step 4 — PENDING_PAYMENT staleness check
+In subscription-db, find all subscriptions with status = 'PENDING_PAYMENT'.
+Calculate how long each has been in this state using (NOW() - created_at).
+Flag records older than 30 minutes as stale.
+
+### Step 5 — Orphan detection
+Find subscription IDs that exist in subscription-db but have no corresponding
+row in payment-db (i.e., no payment was ever attempted).
+
+---
+
+## Report Format
+
+Generate a formal audit report containing:
+
+1. **Executive Summary** — overall consistency score (consistent records / total audited × 100)
+2. **Baseline Metrics** — counts and status distributions for both tables
+3. **Consistency Check Results** — per-step findings with consistent vs. inconsistent counts
+4. **Violations Table** — list every inconsistent record with: subscription_id, payment status,
+   subscription status, created_at, and a short "Issue" description
+5. **Staleness Table** — PENDING_PAYMENT records with age > 30 minutes
+6. **Risk Assessment** — categorize findings as CRITICAL / WARNING / INFO
+7. **Recommendations** — actionable next steps for each violation type
+
+Present all findings clearly. Use tabular format for record-level details.
