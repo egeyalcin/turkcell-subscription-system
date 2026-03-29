@@ -1,0 +1,272 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.wrap { padding: 1.5rem 0; }
+.report-header { padding-bottom: 1.25rem; margin-bottom: 1.5rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.report-title { font-size: 20px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.report-meta { font-size: 13px; color: var(--color-text-secondary); }
+.section-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-tertiary); margin: 1.75rem 0 0.75rem; }
+.metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+.metric-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 16px; }
+.metric-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
+.metric-value { font-size: 24px; font-weight: 500; }
+.mv-neutral { color: var(--color-text-primary); }
+.mv-success { color: #0F6E56; }
+.mv-danger { color: #A32D2D; }
+.mv-warn { color: #854F0B; }
+.mv-info { color: #185FA5; }
+.two-col { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-bottom: 0; }
+.dist-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+.dist-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 12px; }
+.dist-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.dist-row:last-child { margin-bottom: 0; }
+.badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+.b-active { background: #E1F5EE; color: #085041; }
+.b-pending { background: #FAEEDA; color: #633806; }
+.b-rejected { background: #FCEBEB; color: #791F1F; }
+.b-cancelled { background: #F1EFE8; color: #444441; }
+.b-success { background: #E1F5EE; color: #085041; }
+.b-failed { background: #FCEBEB; color: #791F1F; }
+.b-info { background: #E6F1FB; color: #0C447C; }
+.b-warn { background: #FAEEDA; color: #633806; }
+.dist-count { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-left: auto; }
+.dist-pct { font-size: 12px; color: var(--color-text-tertiary); min-width: 36px; text-align: right; }
+.check-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+.check-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+.check-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.check-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.check-result { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
+.cr-pass { background: #E1F5EE; color: #085041; }
+.cr-warn { background: #FAEEDA; color: #633806; }
+.cr-crit { background: #FCEBEB; color: #791F1F; }
+.check-detail { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
+.risk-list { display: flex; flex-direction: column; gap: 8px; }
+.risk-item { display: flex; align-items: flex-start; gap: 12px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 12px 14px; }
+.risk-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.rd-info { background: #378ADD; }
+.rd-warn { background: #EF9F27; }
+.rd-crit { background: #E24B4A; }
+.risk-content { flex: 1; }
+.risk-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+.risk-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+.risk-cat { font-size: 11px; font-weight: 500; padding: 1px 7px; border-radius: 20px; margin-left: auto; flex-shrink: 0; }
+.rc-info { background: #E6F1FB; color: #0C447C; }
+.rc-warn { background: #FAEEDA; color: #633806; }
+.rc-crit { background: #FCEBEB; color: #791F1F; }
+.rec-list { display: flex; flex-direction: column; gap: 8px; }
+.rec-item { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; }
+.rec-num { font-size: 12px; font-weight: 500; color: var(--color-text-tertiary); min-width: 20px; padding-top: 1px; }
+.rec-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
+.score-bar-wrap { margin: 1rem 0; }
+.score-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.score-label { font-size: 12px; color: var(--color-text-secondary); width: 120px; flex-shrink: 0; }
+.score-track { flex: 1; height: 6px; background: var(--color-background-secondary); border-radius: 3px; overflow: hidden; }
+.score-fill { height: 100%; border-radius: 3px; }
+.sf-green { background: #1D9E75; }
+.sf-amber { background: #EF9F27; }
+.sf-red { background: #E24B4A; }
+.score-pct { font-size: 12px; font-weight: 500; color: var(--color-text-primary); min-width: 36px; text-align: right; }
+.divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 1.5rem 0; }
+</style>
+
+<div class="wrap">
+  <div class="report-header">
+    <div class="report-title">Cross-DB Consistency & Health Audit Report</div>
+    <div class="report-meta">Audit tarihi: 2026-03-29 &nbsp;·&nbsp; Scope: payment-db.payments ↔ subscription-db.subscriptions &nbsp;·&nbsp; Auditor: Senior Distributed Systems Auditor</div>
+  </div>
+
+  <div class="section-label">Executive summary — overall consistency scores</div>
+  <div class="metric-grid" style="margin-bottom: 12px;">
+    <div class="metric-card">
+      <div class="metric-label">Toplam subscription</div>
+      <div class="metric-value mv-neutral">355</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Payment referansı olan</div>
+      <div class="metric-value mv-info">240</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Orphan (ödeme yok)</div>
+      <div class="metric-value mv-warn">115</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Toplam payment</div>
+      <div class="metric-value mv-neutral">240</div>
+    </div>
+  </div>
+
+  <div class="score-bar-wrap">
+    <div class="score-row">
+      <span class="score-label">SUCCESS → ACTIVE</span>
+      <div class="score-track"><div class="score-fill sf-green" style="width:100%"></div></div>
+      <span class="score-pct">100%</span>
+    </div>
+    <div class="score-row">
+      <span class="score-label">FAILED → REJECTED</span>
+      <div class="score-track"><div class="score-fill sf-green" style="width:100%"></div></div>
+      <span class="score-pct">100%</span>
+    </div>
+    <div class="score-row">
+      <span class="score-label">PENDING staleness</span>
+      <div class="score-track"><div class="score-fill sf-red" style="width:100%"></div></div>
+      <span class="score-pct">115/115</span>
+    </div>
+    <div class="score-row">
+      <span class="score-label">Orphan oranı</span>
+      <div class="score-track"><div class="score-fill sf-amber" style="width:32%"></div></div>
+      <span class="score-pct">32%</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Baseline metrics — status dağılımı</div>
+  <div class="two-col">
+    <div class="dist-card">
+      <div class="dist-title">payment-db · payments (240 kayıt)</div>
+      <div class="dist-row"><span class="badge b-success">SUCCESS</span><span class="dist-count">172</span><span class="dist-pct">71.7%</span></div>
+      <div class="dist-row"><span class="badge b-failed">FAILED</span><span class="dist-count">68</span><span class="dist-pct">28.3%</span></div>
+    </div>
+    <div class="dist-card">
+      <div class="dist-title">subscription-db · subscriptions (355 kayıt)</div>
+      <div class="dist-row"><span class="badge b-active">ACTIVE</span><span class="dist-count">171</span><span class="dist-pct">48.2%</span></div>
+      <div class="dist-row"><span class="badge b-pending">PENDING_PAYMENT</span><span class="dist-count">115</span><span class="dist-pct">32.4%</span></div>
+      <div class="dist-row"><span class="badge b-rejected">REJECTED</span><span class="dist-count">68</span><span class="dist-pct">19.2%</span></div>
+      <div class="dist-row"><span class="badge b-cancelled">CANCELLED</span><span class="dist-count">1</span><span class="dist-pct">0.3%</span></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Consistency check sonuçları (adım adım)</div>
+  <div class="check-grid">
+    <div class="check-card">
+      <div class="check-head">
+        <span class="check-name">Step 2 — SUCCESS ↔ ACTIVE</span>
+        <span class="check-result cr-pass">PASS</span>
+      </div>
+      <div class="check-detail">Son 20 SUCCESS ödemenin tamamı subscription-db'de ACTIVE statüsüne sahip. 20/20 tutarlı. Senkronizasyon tam.</div>
+    </div>
+    <div class="check-card">
+      <div class="check-head">
+        <span class="check-name">Step 3 — FAILED ↔ REJECTED</span>
+        <span class="check-result cr-pass">PASS</span>
+      </div>
+      <div class="check-detail">68 FAILED ödemenin tamamı subscription-db'de REJECTED durumunda. 68/68 tutarlı. Ghost activation riski bulunmuyor.</div>
+    </div>
+    <div class="check-card">
+      <div class="check-head">
+        <span class="check-name">Step 4 — PENDING staleness</span>
+        <span class="check-result cr-crit">CRITICAL</span>
+      </div>
+      <div class="check-detail">115 kayıt PENDING_PAYMENT durumunda. En eskisi 9.038 dakika (~6.3 gün) önce oluşturulmuş. Tamamı 30 dk eşiğini aşıyor. Hiçbirinin ilgili payment kaydı yok.</div>
+    </div>
+    <div class="check-card">
+      <div class="check-head">
+        <span class="check-name">Step 5 — Orphan detection</span>
+        <span class="check-result cr-warn">WARNING</span>
+      </div>
+      <div class="check-detail">355 subscription kaydının 115'ine (%32.4) ait hiçbir payment denemesi yok. Bu kayıtların tamamı PENDING_PAYMENT statüsünde ve ödeme akışı hiç başlatılmamış.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Violations & staleness özeti</div>
+  <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed;">
+      <thead style="background: var(--color-background-secondary);">
+        <tr>
+          <th style="text-align:left; padding: 10px 12px; font-size: 12px; font-weight:500; color:var(--color-text-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); width:22%;">Kontrol</th>
+          <th style="text-align:left; padding: 10px 12px; font-size: 12px; font-weight:500; color:var(--color-text-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); width:16%;">Denetlenen</th>
+          <th style="text-align:left; padding: 10px 12px; font-size: 12px; font-weight:500; color:var(--color-text-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); width:16%;">Tutarlı</th>
+          <th style="text-align:left; padding: 10px 12px; font-size: 12px; font-weight:500; color:var(--color-text-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); width:16%;">İhlal</th>
+          <th style="text-align:left; padding: 10px 12px; font-size: 12px; font-weight:500; color:var(--color-text-secondary); border-bottom: 0.5px solid var(--color-border-tertiary);">Açıklama</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 12px; color:var(--color-text-primary); border-bottom:0.5px solid var(--color-border-tertiary);">SUCCESS ↔ ACTIVE</td>
+          <td style="padding:9px 12px; border-bottom:0.5px solid var(--color-border-tertiary);">20</td>
+          <td style="padding:9px 12px; border-bottom:0.5px solid var(--color-border-tertiary); color:#0F6E56; font-weight:500;">20</td>
+          <td style="padding:9px 12px; border-bottom:0.5px solid var(--color-border-tertiary);">0</td>
+          <td style="padding:9px 12px; font-size:12px; color:var(--color-text-secondary); border-bottom:0.5px solid var(--color-border-tertiary);">Tam senkron</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px; color:var(--color-text-primary); border-bottom:0.5px solid var(--color-border-tertiary);">FAILED ↔ REJECTED</td>
+          <td style="padding:9px 12px; border-bottom:0.5px solid var(--color-border-tertiary);">68</td>
+          <td style="padding:9px 12px; border-bottom:0.5px solid var(--color-border-tertiary); color:#0F6E56; font-weight:500;">68</td>
+          <td style="padding:9px 12px; border-bottom:0.5px solid var(--color-border-tertiary);">0</td>
+          <td style="padding:9px 12px; font-size:12px; color:var(--color-text-secondary); border-bottom:0.5px solid var(--color-border-tertiary);">Tam senkron</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px; color:var(--color-text-primary); border-bottom:0.5px solid var(--color-border-tertiary);">PENDING staleness</td>
+          <td style="padding:9px 12px; border-bottom:0.5px solid var(--color-border-tertiary);">115</td>
+          <td style="padding:9px 12px; border-bottom:0.5px solid var(--color-border-tertiary);">0</td>
+          <td style="padding:9px 12px; border-bottom:0.5px solid var(--color-border-tertiary); color:#A32D2D; font-weight:500;">115</td>
+          <td style="padding:9px 12px; font-size:12px; color:var(--color-text-secondary); border-bottom:0.5px solid var(--color-border-tertiary);">Min yaş: 8.866 dk · Maks yaş: 9.038 dk · Hepsi stale</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px; color:var(--color-text-primary);">Orphan subscriptions</td>
+          <td style="padding:9px 12px;">355</td>
+          <td style="padding:9px 12px; color:#0F6E56; font-weight:500;">240</td>
+          <td style="padding:9px 12px; color:#A32D2D; font-weight:500;">115</td>
+          <td style="padding:9px 12px; font-size:12px; color:var(--color-text-secondary);">Payment akışı hiç başlatılmamış; tümü PENDING_PAYMENT</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Risk assessment</div>
+  <div class="risk-list">
+    <div class="risk-item">
+      <div class="risk-dot rd-crit"></div>
+      <div class="risk-content">
+        <div class="risk-title">115 kayıt kalıcı PENDING_PAYMENT durumunda</div>
+        <div class="risk-desc">Tüm kayıtlar 6+ gündür ödeme bekliyor. En eskisi 9.038 dakika (~6.3 gün) önce oluşturulmuş. Muhtemelen bir payment-service arızası veya event kaybından kaynaklanıyor. Bu kullanıcılar aboneliğe erişemiyor olabilir.</div>
+      </div>
+      <span class="risk-cat rc-crit">CRITICAL</span>
+    </div>
+    <div class="risk-item">
+      <div class="risk-dot rd-warn"></div>
+      <div class="risk-content">
+        <div class="risk-title">115 orphan subscription — payment hiç tetiklenmemiş</div>
+        <div class="risk-desc">Bu kayıtlar subscription oluşturulmuş ancak ödeme akışı başlatılmamış. Outbox/event tablosunda kayıp event olabilir. Subscription lifecycle'ı tamamlanmamış.</div>
+      </div>
+      <span class="risk-cat rc-warn">WARNING</span>
+    </div>
+    <div class="risk-item">
+      <div class="risk-dot rd-info"></div>
+      <div class="risk-content">
+        <div class="risk-title">SUCCESS/FAILED ↔ ACTIVE/REJECTED senkronizasyonu mükemmel</div>
+        <div class="risk-desc">Ödeme sonuçlanan tüm kayıtlarda (172 SUCCESS + 68 FAILED = 240) çapraz veritabanı tutarlılığı %100. Saga/event-driven pipeline doğru çalışıyor.</div>
+      </div>
+      <span class="risk-cat rc-info">INFO</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Öneriler</div>
+  <div class="rec-list">
+    <div class="rec-item">
+      <span class="rec-num">1.</span>
+      <span class="rec-text">115 PENDING_PAYMENT kaydı için payment-service'e manuel retry tetikleyin. Outbox tablosunu kontrol edin — event'lerin publish edilip edilmediğini doğrulayın.</span>
+    </div>
+    <div class="rec-item">
+      <span class="rec-num">2.</span>
+      <span class="rec-text">30 dakikayı aşan PENDING_PAYMENT kayıtlarını otomatik EXPIRED/CANCELLED'a çevirecek bir dead-letter veya TTL mekanizması ekleyin.</span>
+    </div>
+    <div class="rec-item">
+      <span class="rec-num">3.</span>
+      <span class="rec-text">Orphan tespiti için bu audit sorgusunu cron job'a alın. Payment denemesi olmadan 10+ dakika PENDING kalan subscription'lar için alert kurun.</span>
+    </div>
+    <div class="rec-item">
+      <span class="rec-num">4.</span>
+      <span class="rec-text">Subscription oluşturma ve payment tetikleme arasındaki süreyi ölçün. Distributed transaction (Saga pattern) compensating action'larını review edin.</span>
+    </div>
+  </div>
+</div>

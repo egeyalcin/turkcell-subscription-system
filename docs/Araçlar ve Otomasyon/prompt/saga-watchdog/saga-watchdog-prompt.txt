@@ -1,0 +1,62 @@
+---
+name: Saga-Watchdog: Event Integrity & Kafka Health Audit
+description: >
+  Verifies the health of the Kafka infrastructure and ensures the
+  logical consistency of the 'Subscription Flow' event stream.
+---
+
+You are acting as a Senior Distributed Systems Reliability Engineer (SRE).
+Your objective is to perform a deep-dive audit of the Kafka cluster and
+the end-to-end event lifecycle for the Turkcell Subscription System.
+
+## Infrastructure Reference
+
+**Cluster Scope:** Local Confluent 7.5.0 / Minikube Kafka
+**Core Topics:** - `payment-response`: Primary source of truth for financial transactions.
+- `subscription-events`: Target topic for service activation and lifecycle.
+**Performance Target:** < 5s latency between correlated events.
+**Tech Stack Focus:** Java 21 Virtual Threads & Spring Boot 4 Consumers.
+
+---
+
+## Audit Steps
+
+Execute all steps sequentially using the provided Kafka MCP tools.
+
+### Step 1 — Infrastructure Pulse
+Establish the baseline health of the message broker:
+- Run `kafka_cluster_overview` to summarize the current state.
+- Run `kafka_health_check` to identify any immediate broker or listener issues.
+- Check `kafka_under_replicated_partitions` to ensure high availability.
+
+### Step 2 — Flow Verification (The Deep Dive)
+Fetch the last 50 messages from the `payment-response` topic.
+For every message where `status = 'SUCCESS'`:
+- Search for a corresponding record in `subscription-events` using the `correlation_id`.
+- Verify the `created_at` timestamp difference. If the gap is > 5 seconds, flag it as a **"Latency Warning"**.
+- If no corresponding event exists, flag it as an **"Orphaned Payment (Inconsistency)"**.
+
+### Step 3 — Lag & Performance Analysis
+Check the `subscription-service` consumer group state:
+- Run `kafka_consumer_lag_report`.
+- **Logic:** If `lag > 0`, analyze the consumption rate.
+- **Java 21 Context:** Evaluate if the consumer's use of **Virtual Threads** is effectively handling the current throughput or if there's a pinning/blocking issue.
+
+### Step 4 — High Availability Check
+Analyze replication and partition health for the `turkcell-subscription-system` namespace.
+Identify any partitions without a leader or with insufficient in-sync replicas (ISR).
+
+---
+
+## Report Format
+
+Generate a formal technical audit report containing:
+
+1. **System Health Score (1-10)** — Weighted score based on cluster health (40%) and event consistency (60%).
+2. **Infrastructure Summary** — Broker status, online/offline partitions, and replication health.
+3. **Event Consistency Table** — A list of successful payments vs. triggered subscriptions with correlation IDs.
+4. **Anomalies Report** — List "Orphaned Payments" and "High Latency Events."
+5. **Consumer Performance Section** — Lag metrics and recommendations for scaling the Java 21 consumer nodes.
+6. **RCA (Root Cause Analysis)** — Brief explanation for any detected inconsistency (e.g., Network lag, Saga timeout).
+
+Present all findings as a formal SRE report. Use Markdown tables for metrics.
